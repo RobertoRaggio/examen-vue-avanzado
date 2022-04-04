@@ -1,212 +1,217 @@
 <template>
   <div>
     <div>
-     
       <div class="nose">
-         <h2 style="margin: 20px 0">Administración</h2>
+        <h2 style="margin: 20px 0">Administración</h2>
         <b-button class="m-2" variant="primary" @click="$bvModal.show('bv-modal-example')">Agregar Curso</b-button>
-              <b-modal id="bv-modal-example" hide-footer>
-                  <template #modal-title>
-                   Agregando Curso
-                   </template>
-             <div>
-            <b-form-input  class="m-1" v-model="curso.nombreCurso" placeholder="Nombre del Curso"></b-form-input>
-            <b-form-input class="m-1" v-model="curso.urlImg" placeholder="Url de la imagen del Curso"></b-form-input> 
-            <b-form-input class="m-1" v-model="curso.cuposDelCurso" placeholder="Cupos del Curso"></b-form-input>
-            <b-form-input class="m-1" v-model="curso.inscritosEnElCurso" placeholder="Inscritos en el Curso"></b-form-input> 
+        <b-modal id="bv-modal-example" hide-footer>
+          <template #modal-title> Registrando un nuevo curso </template>
+          <div>
+            <b-form-input class="m-1" v-model="curso.nombreDelCurso" placeholder="Nombre del Curso"></b-form-input>
+            <b-form-input class="m-1" v-model="curso.urlImg" placeholder="Url de la imagen del Curso"></b-form-input>
+            <b-form-input class="m-1" type="number" v-model="curso.cuposDelCurso" placeholder="Cupos del Curso"></b-form-input>
+            <b-form-input class="m-1" type="number" v-model="curso.inscritosEnElCurso" placeholder="Inscritos en el Curso"></b-form-input>
             <b-form-input class="m-1" v-model="curso.duracionDelCurso" placeholder="Duración del Curso"></b-form-input>
+            <b-form-input class="m-1" v-model="curso.costoDelCurso" placeholder="Costo del Curso"></b-form-input>
             <b-form-input class="m-1" v-model="curso.codigoDelCurso" placeholder="Codigo del Curso"></b-form-input>
-              <b-form-textarea class="m-1" v-model="curso.descripcion" id="textarea-rows" placeholder="Descripción del curso" rows="8">
-              </b-form-textarea>
-              <div class="m-2">
-               <b-button @click="addCurso" class="m-1" variant="success" >Registrar</b-button>
-               <b-button class="m-1" variant="danger">Limpiar Formulario</b-button>
-               <b-button class="m-1" variant="warning">Limpiar Validación</b-button>
-               </div>
+            <b-form-textarea class="m-1" v-model="curso.descripcion" id="textarea-rows" placeholder="Descripción del curso" rows="8">
+            </b-form-textarea>
+            <div class="m-2">
+              <b-button @click="agregarCurso" class="m-1" variant="success">Registrar</b-button>
+              <b-button class="m-1" variant="danger">Limpiar Formulario</b-button>
+              <b-button class="m-1" variant="warning">Limpiar Validación</b-button>
+            </div>
           </div>
-          </b-modal>
-          
-        
+        </b-modal>
       </div>
     </div>
-  
-      <table class="mx-4 tabla">
-          <thead>
-            <tr>
-              <th>Curso</th>
-              <th>Cupos</th>
-              <th>Inscritos</th>
-              <th>Meses</th>
-              <th>Costo</th>
-              <th>Terminado</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-        <tr v-for="(curso, i) in cursos" :key="i">
-               <td>{{ curso.data.curso }}</td>
-          <td>{{ curso.data.cupos }}</td>
-          <td>{{ curso.data.inscritos }}</td>
-          <td>{{ curso.data.meses }}</td>
-          <td>{{ curso.data.costo }}</td>
-          <td>{{ curso.data.terminado ? "SI" : "No" }}</td>
-          <td>{{ curso.data.fecha.toDate() }}</td>
-               <td>
-                 <button @click="editarCurso(curso.id)" class="btn">🖊</button>
-               </td>
-               <td>
-                 <button @click="deleteDoc(curso.id)"> Eliminar </button>
-               </td>
-              
-
-            </tr>
-          </tbody>
-
+    <b-container>
+      <table>
+        <thead>
+          <tr>
+            <th>Cursos</th>
+            <th>Cupos</th>
+            <th>Inscritos</th>
+            <th>Duración</th>
+            <th>Costo</th>
+            <th>Finalizado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(curso, i) in cursos" :key="i">
+            <td>{{ curso.nombreDelCurso }}</td>
+            <td>{{ curso.cuposDelCurso }}</td>
+            <td>{{ curso.inscritosEnElCurso }}</td>
+            <td>{{ curso.duracionDelCurso }}</td>
+            <td>{{ curso.costoDelCurso }}</td>
+            <td>{{ curso.terminado }}</td>
+            <td>{{ curso.fechaDelCurso }}</td>
+            <td>
+              <b-button style="margin-right:20px;" @click="onEditarCurso(curso.id)">Editar</b-button>
+              <b-button @click="borrar(curso.id)"> Eliminar </b-button>
+            </td>
+          </tr>
+        </tbody>
       </table>
 
       <div>
-        <input class="uno m-2" type="text" readonly="readonly" placeholder="Cantidad maxima de estudiantes:"/>
-        <input class="dos m-2" type="text" readonly="readonly" placeholder="Cantidad de Alumnos Inscritos:"/>
-        <input class="tres m-2" type="text" readonly="readonly" placeholder="Cantidad de Cupos Restantes:"/>
-        <input class="cuatro m-2" type="text" readonly="readonly" placeholder="Cantidad de Cursos Terminados:"/>
-        <input class="cinco m-2" type="text" readonly="readonly" placeholder="Cantidad de Cursos Activos:"/>
-        <input class="seis m-2" type="text" readonly="readonly" placeholder="Cantidad Total de Cursos:"/>
+        <p class="caja-alumnos">La cantidad de alumnos permitidos es: {{ getAlumnosPermitidos }} alumnos</p>
+        <p class="caja-inscritos">La cantidad de alumnos inscritos es: {{ getInscritos }} alumnos</p>
+        <p class="caja-restantes">La cantidad de cupos restantes es: {{ getCuposRestantes }} alumnos</p>
+        <p class="caja-finalizados">La cantidad de cursos Finalizados es: {{ getTerminados }} alumnos</p>
+        <p class="caja-activos">La cantidad de cursos activos es: {{ getActivos }} alumnos</p>
+        <p class="caja-total">La cantidad de cursos es: {{ getTotalCursos }} alumnos</p>
       </div>
-   
+
+      <b-modal v-model="modalShow" hide-footer>
+        <h1>Editar</h1>
+
+        <div class="m-3"><label>Nombre del curso</label><input v-model="cursoSeleccionado.nombreDelCurso" /></div>
+        <div class="m-3"><label>Url de imagen del curso</label><input v-model="cursoSeleccionado.urlImg" /></div>
+        <div class="m-3"><label>Cupos del curso</label><input v-model="cursoSeleccionado.cuposDelCurso" /></div>
+        <div class="m-3"><label>Inscritos en el curso</label><input v-model="cursoSeleccionado.inscritosEnElCurso" /></div>
+        <div class="m-3"><label>Duración del curso</label><input v-model="cursoSeleccionado.duracionDelCurso" /></div>
+        <div class="m-3"><label>Descripción del curso</label><b-form-textarea v-model="cursoSeleccionado.descripcion" id="textarea-rows" rows="8"></b-form-textarea></div>
+        <b-button @click="actualizar" class="m-1" variant="success">Actualizar</b-button>
+      </b-modal>
+    </b-container>
   </div>
 </template>
 <script>
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  doc,
-  deleteDoc,
-  setDoc,
-} from "firebase/firestore"; //
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
-  name: "About",
+  name: "Administracion",
 
   data() {
     return {
       curso: {
-        nombreCurso: "",
+        nombreDelCurso: "",
         urlImg: "",
         cuposDelCurso: "",
         inscritosEnElCurso: "",
         duracionDelCurso: "",
+        costoDelCurso: "",
+        terminado: "",
+        fechaDelCurso: "",
         codigoDelCurso: "",
         descripcion: "",
       },
       cursoSeleccionado: {
         id: "",
-        data: {
-          nombreCurso: "",
-          urlImg: "",
-          cuposDelCurso: "",
-          inscritosEnElCurso: "",
-          duracionDelCurso: "",
-          codigoDelCurso: "",
-          descripcion: "",
-        },
+        nombreDelCurso: "",
+        urlImg: "",
+        cuposDelCurso: "",
+        inscritosEnElCurso: "",
+        duracionDelCurso: "",
+        costoDelCurso: "",
+        terminado: "",
+        fechaDelCurso: "",
+        codigoDelCurso: "",
+        descripcion: "",
       },
 
-      cursos: [],
       modalShow: false,
     };
   },
   methods: {
-    async addCurso() {
-      alert("Regristro con exito!");
-      const db = getFirestore();
-
-      const coleccion = collection(db, "cursos");
-
-      const documento = this.curso;
-      await addDoc(coleccion, documento);
-    },
-    async getCurso() {
-      const db = getFirestore();
-      const coleccion = collection(db, "cursos");
-      const q = query(coleccion);
-
-      onSnapshot(q, (querySnapshot) => {
-        const cursos = [];
-        querySnapshot.forEach((doc) => {
-          const curso = { id: doc.id, data: doc.data() };
-          cursos.push(curso);
-        });
-        this.cursos = cursos;
-      });
+    ...mapActions(["getCursos", "addCursos", "actualizarCurso", "deleteCurso"]),
+    async agregarCurso() {
+      const newDate = new Date(new Date().setMonth(new Date().getMonth() + 7));
+      const newCurso = {
+        ...this.curso,
+        terminado: "No",
+        fechaDelCurso: newDate.toLocaleDateString(),
+      };
+      await this.addCursos(newCurso);
     },
     async borrar(id) {
-      const db = getFirestore();
-      const coleccion = "cursos";
-      await deleteDoc(doc(db, coleccion, id));
-      alert("Curso Eliminado!");
+      await this.deleteCurso(id);
+    },
+    async actualizar() {
+      const { cursoSeleccionado } = this;
+      await this.actualizarCurso(cursoSeleccionado);
     },
 
-    ///EDITAR
     onEditarCurso(id) {
       const { cursos } = this;
       const resultado = { ...cursos.find((u) => u.id === id) };
       this.modalShow = true;
       this.cursoSeleccionado = resultado;
     },
-    async actualizarCurso() {
-      const db = getFirestore();
-      const { id, data } = this.cursoSeleccionado;
-      await setDoc(doc(db, "cursos", id), data);
-      this.modalShow = false;
-    },
   },
-  mounted() {
-    this.getCurso();
+  async mounted() {
+    await this.getCursos();
+  },
+  computed: {
+    ...mapState(["cursos"]),
+    ...mapGetters([
+      "getAlumnosPermitidos",
+      "getInscritos",
+      "getCuposRestantes",
+      "getTerminados",
+      "getActivos",
+      "getTotalCursos",
+    ]),
   },
 };
 </script>
 
-
-
-
 <style >
 input {
-    border-radius: 0.3rem;
- padding:0.2rem;
- border:0.1rem solid;
+  border-radius: 0.3rem;
+  padding: 0.2rem;
+  border: 0.1rem solid;
   margin: 0.4rem;
   width: 100%;
-  box-shadow: 1px 2px 1px #aaaaaa;;
-  
+  box-shadow: 1px 2px 1px #aaaaaa;
 }
-.uno {
-  border-color: rgb(140, 92, 236);
-}
-.dos {
-  border-color: rgb(11, 255, 255);
-}
-.tres {
-  border-color: orangered;
-}
-.cuatro {
-  border-color: crimson;
-}
-.cinco {
-  border-color: saddlebrown;
-}
-.seis {
-  border-color:orange;
-}
-.nose{
+.nose {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.tabla{
-  align-items: center
+table {
+  text-align: left;
+  width: 100%;
 }
-
-
+th {
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+td {
+  padding-right: 20px;
+  padding-bottom: 10px;
+}
+.caja-alumnos {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px rgb(140, 92, 236);
+}
+.caja-inscritos {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px rgb(11, 255, 255);
+}
+.caja-restantes {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px orangered;
+}
+.caja-finalizados {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px crimson;
+}
+.caja-activos {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px saddlebrown;
+}
+.caja-total {
+  text-align: left;
+  padding: 10px;
+  border: solid 1px orange;
+}
 </style>

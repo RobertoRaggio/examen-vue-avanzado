@@ -1,10 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Registro from "../views/Registro.vue"
+import Registrar from "../views/Registrar.vue"
 import Administracion from "../views/Administracion.vue";
-import Login from "../views/Login.vue"
-import About from "../views/About.vue"
+import Login from "../views/Login.vue";
 import { getAuth } from "firebase/auth";
  
 Vue.use(VueRouter);
@@ -13,27 +12,31 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home, 
+    meta: {
+      authRequired: true,
+    }
   },
   {
-    path: "/about",
-    name: "About",
-    Component: About,
-  },
-  {
-    path: "/Registro",
-    name: "Registro",
-    component: Registro
+    path: "/Registrar",
+    name: "Registrar",
+    component: Registrar
   },
   {
     path: "/Administracion",
     name: "Administracion",
-    component: Administracion
+    component: Administracion,
+    meta: {
+      authRequired: true,
+    }
   },
   {
     path: "/Login",
     name: "Login",
-    component: Login
+    component: Login,
+    meta: {
+      authRequired: true,
+    }
   },
 ];
 
@@ -44,4 +47,21 @@ const router = new VueRouter({
 });
 
 
+router.beforeEach((to, from, next) => {
+  const { currentUser } = getAuth()
+  const { meta: { authRequired } } = to;
+
+  if (currentUser && authRequired) {
+    next()
+  }
+  else if (!currentUser && authRequired) {
+    next("/login")
+  }
+  else if (currentUser && !authRequired) {
+    next("/")
+  }
+  else {
+    next()
+  }
+})
 export default router;
